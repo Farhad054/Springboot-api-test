@@ -6,6 +6,7 @@ import com.guliyev.app.rest.repository.CourseRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.guliyev.app.rest.ExceptionHandle.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +42,7 @@ public class CourseService {
 
     public CourseDTO updateCourse(Long id, CourseDTO courseDTO) {
         Course courseToUpdate = courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
 
         courseToUpdate.setName(courseDTO.getName());
         courseToUpdate.setCapacity(courseDTO.getCapacity());
@@ -53,19 +54,22 @@ public class CourseService {
 
     public void deleteCourse(Long id) {
         Course courseToDelete = courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
         courseRepository.delete(courseToDelete);
     }
+
 
     private CourseDTO convertToDTO(Course course) {
         CourseDTO courseDTO = new CourseDTO();
         BeanUtils.copyProperties(course, courseDTO);
+        courseDTO.setId(course.getId());
         return courseDTO;
     }
 
     private Course convertToEntity(CourseDTO courseDTO) {
         Course course = new Course();
         BeanUtils.copyProperties(courseDTO, course);
+        course.setId(courseDTO.getId());
         return course;
     }
 }

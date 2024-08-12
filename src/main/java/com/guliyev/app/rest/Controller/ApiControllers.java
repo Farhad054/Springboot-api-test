@@ -1,5 +1,6 @@
 package com.guliyev.app.rest.Controller;
 
+import com.guliyev.app.rest.ExceptionHandle.ApiRequestException;
 import com.guliyev.app.rest.UserService.UserService;
 import com.guliyev.app.rest.UniversityService.UniversityService;
 import com.guliyev.app.rest.CourseService.CourseService;
@@ -8,10 +9,20 @@ import com.guliyev.app.rest.dto.UniversityDTO;
 import com.guliyev.app.rest.dto.CourseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.BindingResult;
+import com.guliyev.app.rest.ExceptionHandle.GlobalExceptionHandler;
+import com.guliyev.app.rest.ExceptionHandle.ApiRequestException;
+import com.guliyev.app.rest.ExceptionHandle.ResourceNotFoundException;
+import com.guliyev.app.rest.ExceptionHandle.ErrorResponse;
+import com.guliyev.app.rest.ExceptionHandle.InvalidInputException;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import javax.validation.Valid;
 
 import java.util.*;
 
 @RestController
+@RequestMapping("/api") // Add this to define a common base path
 public class ApiControllers {
 
     private final UserService userService;
@@ -32,18 +43,29 @@ public class ApiControllers {
         return userService.getAllUsers();
     }
 
-    @PostMapping(value = "/usersave")
-    public UserDTO saveUser(@RequestBody UserDTO userDTO){
+    @GetMapping(value = "/users/{id}")
+    public UserDTO getUserById(@PathVariable long id) {
+        return userService.getUserById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+    }
+
+    @PostMapping(value = "/users")
+    public UserDTO saveUser(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidInputException(bindingResult.getFieldError().getDefaultMessage());
+        }
         return userService.saveUser(userDTO);
     }
-//
-    @PutMapping(value = "/userupdate/{id}")
-    public UserDTO updateUser(@PathVariable long id, @RequestBody UserDTO userDTO){
+
+    @PutMapping(value = "/users/{id}")
+    public UserDTO updateUser(@PathVariable long id, @Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidInputException(bindingResult.getFieldError().getDefaultMessage());
+        }
         return userService.updateUser(id, userDTO);
     }
 
-    @DeleteMapping(value = "/userdelete/{id}")
-    public String deleteUser(@PathVariable long id){
+    @DeleteMapping(value = "/users/{id}")
+    public String deleteUser(@PathVariable long id) {
         userService.deleteUser(id);
         return "Deleted user with id: " + id;
     }
@@ -55,17 +77,28 @@ public class ApiControllers {
         return universityService.getAllUniversities();
     }
 
-    @PostMapping(value = "/universitysave")
-    public UniversityDTO saveUniversity(@RequestBody UniversityDTO universityDTO){
+    @GetMapping(value = "/universities/{id}")
+    public UniversityDTO getUniversityById(@PathVariable long id) {
+        return universityService.getUniversityById(id).orElseThrow(() -> new ResourceNotFoundException("University not found with id " + id));
+    }
+
+    @PostMapping(value = "/universities")
+    public UniversityDTO saveUniversity(@Valid @RequestBody UniversityDTO universityDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidInputException(bindingResult.getFieldError().getDefaultMessage());
+        }
         return universityService.saveUniversity(universityDTO);
     }
 
-    @PutMapping(value = "/universityupdate/{id}")
-    public UniversityDTO updateUniversity(@PathVariable long id, @RequestBody UniversityDTO universityDTO){
+    @PutMapping(value = "/universities/{id}")
+    public UniversityDTO updateUniversity(@PathVariable long id, @Valid @RequestBody UniversityDTO universityDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidInputException(bindingResult.getFieldError().getDefaultMessage());
+        }
         return universityService.updateUniversity(id, universityDTO);
     }
 
-    @DeleteMapping(value = "/universitydelete/{id}")
+    @DeleteMapping(value = "/universities/{id}")
     public String deleteUniversity(@PathVariable long id){
         universityService.deleteUniversity(id);
         return "Deleted university with id: " + id;
@@ -78,19 +111,37 @@ public class ApiControllers {
         return courseService.getAllCourses();
     }
 
-    @PostMapping(value = "/coursesave")
-    public CourseDTO saveCourse(@RequestBody CourseDTO courseDTO){
+    @GetMapping(value = "/courses/{id}")
+    public CourseDTO getCourseById(@PathVariable long id) {
+        return courseService.getCourseById(id).orElseThrow(() -> new ResourceNotFoundException("Course not found with id " + id));
+    }
+
+    @PostMapping(value = "/courses")
+    public CourseDTO saveCourse(@Valid @RequestBody CourseDTO courseDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidInputException(bindingResult.getFieldError().getDefaultMessage());
+        }
         return courseService.saveCourse(courseDTO);
     }
 
-    @PutMapping(value = "/courseupdate/{id}")
-    public CourseDTO updateCourse(@PathVariable long id, @RequestBody CourseDTO courseDTO){
+    @PutMapping(value = "/courses/{id}")
+    public CourseDTO updateCourse(@PathVariable long id, @Valid @RequestBody CourseDTO courseDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidInputException(bindingResult.getFieldError().getDefaultMessage());
+        }
         return courseService.updateCourse(id, courseDTO);
     }
 
-    @DeleteMapping(value = "/coursedalete/{id}")
+    @DeleteMapping(value = "/courses/{id}")
     public String deleteCourse(@PathVariable long id){
         courseService.deleteCourse(id);
         return "Deleted course with id: " + id;
+    }
+
+    // Add course to user
+    @PostMapping("/users/{userId}/courses/{courseId}")
+    public ResponseEntity<String> addCourseToUser(@PathVariable Long userId, @PathVariable Long courseId) {
+        userService.addCourseToUser(userId, courseId);
+        return ResponseEntity.ok("Course added to user successfully.");
     }
 }

@@ -1,80 +1,39 @@
 package com.guliyev.app.rest.Models;
+
 import jakarta.persistence.*;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import java.util.*;
+import lombok.Data;
+
+import java.util.List;
 
 @Entity
+@Data
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Column
     private String firstname;
+
     @Column
     private String lastname;
+
     @Column
     private int age;
+
     @Column
     private String major;
 
-    //relationships
-
+    // Relationships
     @ManyToOne
     @JoinColumn(name = "university_id")
     private University university;
 
-    @OneToMany(mappedBy = "user")
+    @ManyToMany
+    @JoinTable(
+            name = "user_courses",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
     private List<Course> courses;
-
-    //getters and setters
-
-    public long getId() {
-        return id;
-    }
-    public void setId(long id){
-        this.id = id;
-    }
-    public String getFirstname() {
-        return firstname;
-    }
-    public void setFirstname(String firstname){
-        this.firstname = firstname;
-    }
-    public String getLastname(){
-        return lastname;
-    }
-    public void setLastname(String lastname){
-        this.lastname = lastname;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-    public String getMajor(){
-        return major;
-    }
-    public void setMajor(String major){
-        this.major = major;
-    }
-    public University getUniversity() {
-        return university;
-    }
-
-    public void setUniversity(University university) {
-        this.university = university;
-    }
-
-    public List<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
-    }
 }
-

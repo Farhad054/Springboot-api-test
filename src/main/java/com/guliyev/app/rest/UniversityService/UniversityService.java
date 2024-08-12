@@ -6,6 +6,7 @@ import com.guliyev.app.rest.repository.UniversityRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.guliyev.app.rest.ExceptionHandle.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +42,7 @@ public class UniversityService {
 
     public UniversityDTO updateUniversity(Long id, UniversityDTO universityDTO) {
         University universityToUpdate = universityRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("University not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("University not found with id: " + id));
 
         universityToUpdate.setName(universityDTO.getName());
         universityToUpdate.setCity(universityDTO.getCity());
@@ -53,19 +54,21 @@ public class UniversityService {
 
     public void deleteUniversity(Long id) {
         University universityToDelete = universityRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("University not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("University not found with id: " + id));
         universityRepository.delete(universityToDelete);
     }
 
     private UniversityDTO convertToDTO(University university) {
         UniversityDTO universityDTO = new UniversityDTO();
         BeanUtils.copyProperties(university, universityDTO);
+        universityDTO.setId(university.getId());
         return universityDTO;
     }
 
     private University convertToEntity(UniversityDTO universityDTO) {
         University university = new University();
         BeanUtils.copyProperties(universityDTO, university);
+        university.setId(universityDTO.getId());
         return university;
     }
 }
