@@ -7,11 +7,15 @@ import com.guliyev.app.rest.Models.User;
 import com.guliyev.app.rest.Models.Course;
 import lombok.Builder;
 import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
-
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO {
     @NotNull(message = "User Id cannot be null")
     private Long id;
@@ -41,19 +45,6 @@ public class UserDTO {
     @NotNull(message = "Course names must not be null")
     private List<String> courseNames;
 
-    // Constructors
-    public UserDTO() {
-    }
-
-    public UserDTO(Long id, String firstname, String lastname, int age, String major, Long universityId) {
-        this.id = id;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.age = age;
-        this.major = major;
-        this.universityId = universityId;
-    }
-
     public static UserDTO fromEntity(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
@@ -61,20 +52,16 @@ public class UserDTO {
         userDTO.setLastname(user.getLastname());
         userDTO.setAge(user.getAge());
         userDTO.setMajor(user.getMajor());
-
-        // Set University ID if available
         if (user.getUniversity() != null) {
             userDTO.setUniversityId(user.getUniversity().getId());
         }
-
-        // Set Course IDs and Names if available
         if (user.getCourses() != null) {
             userDTO.setCourseIds(user.getCourses().stream()
-                    .map(Course::getId)  // Extracting Course IDs
+                    .map(Course::getId)
                     .collect(Collectors.toList()));
 
             userDTO.setCourseNames(user.getCourses().stream()
-                    .map(Course::getName)  // Extracting Course Names
+                    .map(Course::getName)
                     .collect(Collectors.toList()));
         }
 

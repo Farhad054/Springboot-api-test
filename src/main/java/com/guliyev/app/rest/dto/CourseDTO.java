@@ -5,8 +5,14 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CourseDTO {
     @NotNull(message = "Id cannot be null")
     private Long id;
@@ -23,14 +29,5 @@ public class CourseDTO {
     @Positive(message = "Credits must be a positive number")
     private int credits;
 
-    // Constructors
-    public CourseDTO() {
-    }
 
-    public CourseDTO(Long id, String name, int capacity, int credits) {
-        this.id = id;
-        this.name = name;
-        this.capacity = capacity;
-        this.credits = credits;
-    }
 }

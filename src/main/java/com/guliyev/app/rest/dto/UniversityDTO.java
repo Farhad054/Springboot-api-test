@@ -5,8 +5,13 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UniversityDTO {
     @NotNull(message = "Id cannot be null")
     private Long id;
@@ -22,15 +27,4 @@ public class UniversityDTO {
     @NotNull(message = "Ranking must not be null")
     @Positive(message = "Ranking must be a positive number")
     private int ranking;
-
-    // Constructors
-    public UniversityDTO() {
-    }
-
-    public UniversityDTO(Long id, String name, String city, int ranking) {
-        this.id = id;
-        this.name = name;
-        this.city = city;
-        this.ranking = ranking;
-    }
 }
