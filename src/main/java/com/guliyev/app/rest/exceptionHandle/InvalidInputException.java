@@ -1,4 +1,4 @@
-package com.guliyev.app.rest.ExceptionHandle;
+package com.guliyev.app.rest.exceptionHandle;
 
 public class InvalidInputException extends RuntimeException {
     public InvalidInputException(String message) {

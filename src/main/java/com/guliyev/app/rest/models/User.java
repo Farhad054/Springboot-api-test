@@ -1,7 +1,6 @@
-package com.guliyev.app.rest.Models;
+package com.guliyev.app.rest.models;
 
-import jakarta.persistence.*;
-import lombok.Builder;
+import javax.persistence.*;
 import lombok.Data;
 
 import java.util.List;

@@ -1,5 +1,5 @@
 package com.guliyev.app.rest.repository;
-import com.guliyev.app.rest.Models.University;
+import com.guliyev.app.rest.models.University;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.EntityGraph;

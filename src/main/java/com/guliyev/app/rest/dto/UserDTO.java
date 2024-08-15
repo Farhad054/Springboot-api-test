@@ -1,10 +1,10 @@
 package com.guliyev.app.rest.dto;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
-import com.guliyev.app.rest.Models.User;
-import com.guliyev.app.rest.Models.Course;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+import com.guliyev.app.rest.models.User;
+import com.guliyev.app.rest.models.Course;
 import lombok.Builder;
 import lombok.Data;
 import lombok.AllArgsConstructor;
@@ -36,35 +36,33 @@ public class UserDTO {
     @Size(min = 2, max = 50, message = "Major must not be empty")
     private String major;
 
-    @NotNull(message = "University ID must not be null")
-    private Long universityId;
+    @NotNull(message = "University must not be null")
+    private UniversityDTO university;
 
-    @NotNull(message = "course IDs must not be null")
-    private List<Long> courseIds;
-
-    @NotNull(message = "Course names must not be null")
-    private List<String> courseNames;
+    @NotNull(message = "Courses must not be null")
+    private List<CourseDTO> courses;
 
     public static UserDTO fromEntity(User user) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setFirstname(user.getFirstname());
-        userDTO.setLastname(user.getLastname());
-        userDTO.setAge(user.getAge());
-        userDTO.setMajor(user.getMajor());
-        if (user.getUniversity() != null) {
-            userDTO.setUniversityId(user.getUniversity().getId());
-        }
-        if (user.getCourses() != null) {
-            userDTO.setCourseIds(user.getCourses().stream()
-                    .map(Course::getId)
-                    .collect(Collectors.toList()));
-
-            userDTO.setCourseNames(user.getCourses().stream()
-                    .map(Course::getName)
-                    .collect(Collectors.toList()));
-        }
-
-        return userDTO;
+        return UserDTO.builder()
+                .id(user.getId())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .age(user.getAge())
+                .major(user.getMajor())
+                .university(user.getUniversity() != null ? UniversityDTO.builder()
+                        .id(user.getUniversity().getId())
+                        .name(user.getUniversity().getName())
+                        .city(user.getUniversity().getCity())
+                        .ranking(user.getUniversity().getRanking())
+                        .build() : null)
+                .courses(user.getCourses() != null ? user.getCourses().stream()
+                        .map(course -> CourseDTO.builder()
+                                .id(course.getId())
+                                .name(course.getName())
+                                .capacity(course.getCapacity())
+                                .credits(course.getCredits())
+                                .build())
+                        .collect(Collectors.toList()) : List.of())
+                .build();
     }
 }

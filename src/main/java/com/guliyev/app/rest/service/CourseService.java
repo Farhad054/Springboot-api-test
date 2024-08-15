@@ -1,19 +1,18 @@
-package com.guliyev.app.rest.CourseService;
+package com.guliyev.app.rest.service;
 
-import com.guliyev.app.rest.Models.Course;
+import com.guliyev.app.rest.models.Course;
 import com.guliyev.app.rest.dto.CourseDTO;
 import com.guliyev.app.rest.repository.CourseRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.guliyev.app.rest.ExceptionHandle.ResourceNotFoundException;
+import com.guliyev.app.rest.exceptionHandle.ResourceNotFoundException;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class CourseService {
+public class CourseService implements CourseServiceInterface {
 
     private final CourseRepository courseRepository;
 
@@ -22,24 +21,28 @@ public class CourseService {
         this.courseRepository = courseRepository;
     }
 
+    @Override
     public List<CourseDTO> getAllCourses() {
         List<Course> courses = courseRepository.findAll();
         return courses.stream()
-                .map(this::convertToDTO)
+                .map(CourseService::convertToDTO)
                 .collect(Collectors.toList());
     }
 
+    @Override
     public Optional<CourseDTO> getCourseById(Long id) {
         Optional<Course> course = courseRepository.findById(id);
-        return course.map(this::convertToDTO);
+        return course.map(CourseService::convertToDTO);
     }
 
+    @Override
     public CourseDTO saveCourse(CourseDTO courseDTO) {
         Course course = convertToEntity(courseDTO);
         Course savedCourse = courseRepository.save(course);
         return convertToDTO(savedCourse);
     }
 
+    @Override
     public CourseDTO updateCourse(Long id, CourseDTO courseDTO) {
         Course courseToUpdate = courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
@@ -52,24 +55,25 @@ public class CourseService {
         return convertToDTO(updatedCourse);
     }
 
+    @Override
     public void deleteCourse(Long id) {
         Course courseToDelete = courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
         courseRepository.delete(courseToDelete);
     }
 
-
-    private CourseDTO convertToDTO(Course course) {
+    private static CourseDTO convertToDTO(Course course) {
         CourseDTO courseDTO = new CourseDTO();
-        BeanUtils.copyProperties(course, courseDTO);
         courseDTO.setId(course.getId());
+        courseDTO.setName(course.getName());
+        courseDTO.setCapacity(course.getCapacity());
+        courseDTO.setCredits(course.getCredits());
         return courseDTO;
     }
 
     private Course convertToEntity(CourseDTO courseDTO) {
         Course course = new Course();
         BeanUtils.copyProperties(courseDTO, course);
-        course.setId(courseDTO.getId());
         return course;
     }
 }

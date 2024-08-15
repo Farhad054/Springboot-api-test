@@ -1,4 +1,4 @@
-package com.guliyev.app.rest.ExceptionHandle;
+package com.guliyev.app.rest.exceptionHandle;
 
 public class ApiRequestException extends RuntimeException {
     public ApiRequestException(String message) {
