@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/users/**").hasRole("USER")
+                .antMatchers("/swagger-ui/**", "/v2/api-docs/**", "/swagger-resources/**", "/swagger-ui.html/**", "/webjars/**").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
