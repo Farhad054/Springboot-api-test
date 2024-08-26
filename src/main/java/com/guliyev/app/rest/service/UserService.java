@@ -110,4 +110,13 @@ public class UserService implements UserServiceInterface {
         user.setId(userDTO.getId());
         return user;
     }
+    public User findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseGet(() -> {
+                    User user = new User(email, "123456");
+                    user.setFirstname("FirstName");
+                    user.setLastname("LastName");
+                    return user;
+                });
+    }
 }
